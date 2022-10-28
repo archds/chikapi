@@ -1,0 +1,47 @@
+// @charset "utf-8"
+
+$primary: hsl(45, 100%, 60%);
+// $link: findColorInvert($primary)
+$body-line-height: 1.7;
+
+@import "~bulma";
+@import "~@creativebulma/bulma-tooltip";
+
+// @import "../core/components/list/index"
+
+.sidebar-layout {
+    // border-right: solid 1px $grey-light
+    height: 105vh;
+    overflow-x: auto;
+    z-index: 50;
+}
+
+html {
+    overflow: hidden;
+}
+
+.content-layout {
+    height: 100vh;
+    padding: 30px;
+    overflow: scroll;
+
+
+    .block {
+        height: 100%;
+    }
+}
+.navbar-start input {
+    width: 400px;
+}
+
+.question-tooltip {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin-left: 5px;
+    top: 2px;
+}
+
+.question-tooltip::before {
+    transition: .3s;
+}
