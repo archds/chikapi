@@ -1,0 +1,26 @@
+{
+    "url": "https://zoo-animal-api.herokuapp.com",
+    "hasOpenapi": true,
+    "readModels": [
+        {
+            "path": "animals/rand/10",
+            "name": "Animals",
+            "id": "animals",
+            "style": "table",
+            "keyFields": [],
+            "include": ["name", "latin_name", "animal_type", "active_time", "lifespan"],
+            "parameters": []
+          }
+    ],
+    "commands": [],
+    "translation": {
+      "address": "Address",
+      "address.geo": "Address geolocation",
+      "lat": "latitude",
+      "lng": "longitude",
+      "company": "Company",
+      "catchPhrase": "catch phrase",
+      "bs": "business"
+    }
+  }
+  

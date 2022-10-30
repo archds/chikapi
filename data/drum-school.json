@@ -1,0 +1,62 @@
+{
+  "url": "http://localhost:8000",
+  "hasOpenapi": true,
+  "readModels": [
+    {
+      "path": "sales/get_student_info",
+      "name": "Random student",
+      "id": "random-student",
+      "keyFields": [
+        {
+          "key": "name.name"
+        },
+        {
+          "key": "name.surname"
+        },
+        {
+          "key": "contact.phone"
+        },
+        {
+          "key": "contact"
+        },
+        {
+          "key": "work_info"
+        }
+      ],
+      "parameters": [
+        {
+          "type": "Query",
+          "key": "student_id",
+          "value": "fb6a907a-5603-11ed-924d-00155dbe7e9a"
+        }
+      ]
+    },
+    {
+      "path": "reports/get_dashboard_rating",
+      "name": "Dashboard rating",
+      "id": "dashboard-rating",
+      "style": "table",
+      "keyFields": [],
+      "include": ["town", "school", "amount"],
+      "parameters": [],
+      "rootKey": "all_schools"
+    }
+  ],
+  "commands": [],
+  "headers": {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInNjb3BlcyI6WyJ1c2VyczpyZWFkIiwidXNlcnM6Y3JlYXRlIiwidXNlcnM6dXBkYXRlIiwidXNlcnM6ZGVsZXRlIiwiYWNjb3VudGluZzpyZWFkIiwiYWNjb3VudGluZzpjcmVhdGUiLCJhY2NvdW50aW5nOnVwZGF0ZSIsImFjY291bnRpbmc6ZGVsZXRlIiwic2FsZXM6cmVhZCIsInNhbGVzOmNyZWF0ZSIsInNhbGVzOnVwZGF0ZSIsInNhbGVzOmRlbGV0ZSJdLCJleHAiOjE2NjY4ODkwODB9.jjXbnWrYGu1dBddK8G_GXedI1Bf34Ucz1jTAkokMbs8"
+  },
+  "translation": {
+    "is_whatsapp_linked": "whatsapp привязан",
+    "is_telegram_linked": "telegram привязан",
+    "contact.phone": "Телефон",
+    "contact": "Контакты",
+    "preferred_communication_method": "Предпочитаемый способ связи",
+    "work_info": "Работа",
+    "salary_date": "Дата зарплаты",
+    "work_time": "Время работы",
+    "amount": "Денег",
+    "school": "Школа",
+    "town": "Город"
+  }
+}

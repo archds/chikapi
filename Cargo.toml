@@ -1,0 +1,19 @@
+[package]
+name = "chikapi"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] } 
+serde_json = "1.0.83"
+serde_with = "2.0.0"
+rocket = "0.4.11"
+rocket_contrib = "0.4.11"
+rocket_cors = "0.5.2"
+reqwest = { version="0.11.12", features = ["json", "blocking"] }
+
+[dev-dependencies]
+cargo-watch = "8.1.2"
+typester = "0.1.1"
