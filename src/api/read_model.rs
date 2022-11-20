@@ -6,10 +6,10 @@ use rocket_contrib::json::Json;
 
 use serde_json::{Map, Value};
 
-use crate::api::response::{RMResponse, RMSchemaResponse, ResponseRenderAs};
-use crate::core::schema::load_schema;
+use crate::api::response::{ObjectData, RMArrayItem, RMResponse, RMResponseItem, RMSchemaResponse};
+use crate::core::schema::{load_schema, save_schema};
 
-use crate::schema::chikapi::{QueryParameter, ReadModel, ReadModelStyle};
+use crate::schema::chikapi::{QueryParameter, ReadModel, ReferenceParameter};
 use crate::utils::{complex_map_get, get_read_model_by_id};
 
 fn get_data(
@@ -39,19 +39,6 @@ fn get_data(
     };
 
     let resp = reqwest::blocking::get(format!("{}/{}", &root_url, &path).as_str()).unwrap();
-    // let headers = {
-    //     let h = Headers::new();
-
-    //     for (k, v) in headers {
-    //         h.set(k.as_str(), v.as_str())
-    //     }
-
-    //     h
-    // };
-
-    // req = req.headers(headers);
-
-    // let resp = req.send().await.unwrap();
 
     match resp.json::<Value>() {
         Ok(val) => Ok(val),
@@ -59,21 +46,27 @@ fn get_data(
     }
 }
 
-fn build_object_key_fields(rm: &ReadModel, obj: &Map<String, Value>) -> Value {
+fn build_object_key_fields_as_vec(rm: &ReadModel, obj: &Map<String, Value>) -> Vec<RMResponseItem> {
     rm.key_fields
         .iter()
         .map(|kf| {
-            let mut res = Map::new();
-            res.insert("value".to_string(), complex_map_get(&kf.key, &obj));
-            res.insert(
-                "prefix".to_string(),
-                kf.prefix
-                    .as_ref()
-                    .map_or(Value::Null, |p| Value::String(p.clone())),
-            );
+            let value = complex_map_get(&kf.key, &obj);
+
+            RMResponseItem::new(value, kf.prefix.clone())
+        })
+        .collect()
+}
+
+fn build_object_key_fields(rm: &ReadModel, obj: &Map<String, Value>) -> ObjectData {
+    rm.key_fields
+        .iter()
+        .map(|kf| {
+            let value = complex_map_get(&kf.key, &obj);
+
+            let res = RMResponseItem::new(value, kf.prefix.clone());
             (kf.key.clone(), res)
         })
-        .collect::<Value>()
+        .collect::<ObjectData>()
 }
 
 #[get("/rm/<id>")]
@@ -98,29 +91,43 @@ pub fn read_model(id: String) -> Result<Json<RMResponse>, Status> {
         _ => data,
     };
 
-    let response_data = match response_data {
-        Value::Object(obj) => build_object_key_fields(&read_model, &obj),
-        Value::Array(arr) => arr
-            .iter()
-            .map(|arr_item| match arr_item {
-                Value::Object(obj) => build_object_key_fields(&read_model, &obj),
-                _ => arr_item.clone(),
-            })
-            .collect(),
-        _ => response_data,
+    let response = match response_data {
+        Value::Object(obj) => RMResponse::Object(build_object_key_fields(&read_model, &obj)),
+        Value::Array(arr) => RMResponse::Table(
+            arr.iter()
+                .map(|arr_item| match arr_item {
+                    Value::Object(obj) => RMArrayItem {
+                        data: build_object_key_fields_as_vec(&read_model, &obj),
+                        reference: match &read_model.reference {
+                            Some(references) => Some(
+                                references
+                                    .parameters
+                                    .iter()
+                                    .filter_map(|reference| match reference {
+                                        ReferenceParameter::Body(_v) => None,
+                                        ReferenceParameter::Path(v) => {
+                                            Some(complex_map_get(v, &obj))
+                                        }
+                                        ReferenceParameter::Query(v) => {
+                                            Some(complex_map_get(v, &obj))
+                                        }
+                                    })
+                                    .collect(),
+                            ),
+                            None => None,
+                        },
+                    },
+                    _ => RMArrayItem {
+                        data: vec![RMResponseItem::new(arr_item.clone(), None)],
+                        reference: None,
+                    },
+                })
+                .collect(),
+        ),
+        _ => RMResponse::Simple(RMResponseItem::new(response_data, None)),
     };
 
-    let render_as = match response_data {
-        Value::Object(_) => ResponseRenderAs::Object,
-        Value::Array(_) => match read_model.style {
-            Some(ReadModelStyle::LIST) => ResponseRenderAs::List,
-            Some(ReadModelStyle::TABLE) => ResponseRenderAs::Table,
-            None => ResponseRenderAs::List,
-        },
-        _ => ResponseRenderAs::Simple,
-    };
-
-    Ok(Json(RMResponse::new(response_data, render_as)))
+    Ok(Json(response))
 }
 
 #[get("/rms")]
@@ -137,4 +144,22 @@ pub fn get_read_models() -> Json<Vec<RMSchemaResponse>> {
         .collect();
 
     Json(response)
+}
+
+#[get("/translation")]
+pub fn get_translation() -> Json<HashMap<String, String>> {
+    let schema = load_schema().unwrap();
+
+    Json(schema.translation)
+}
+
+
+#[post("/add_read_model", data = "<rm>")]
+pub fn add_read_model(rm: Json<ReadModel>) -> Status {
+    let mut schema = load_schema().unwrap();
+    schema.read_models.push(rm.to_owned());
+
+    save_schema(schema).unwrap();
+
+    Status::Created
 }

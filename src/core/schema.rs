@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{BufReader, Write};
 use std::path::PathBuf;
 
 use crate::core::JSON_PATH;
@@ -17,6 +17,13 @@ pub fn load_schema() -> Result<Schema, String> {
     res
 }
 
-// pub fn save_schema(schema: Schema) -> Result<_, &'static str> {
-//     let path = PathBuf::from(JSON_PATH.to_string());
-// }
+pub fn save_schema(schema: Schema) -> Result<(), String> {
+    let path = PathBuf::from(JSON_PATH.to_string());
+    let mut file = File::create(path).unwrap();
+
+    let raw = serde_json::to_string(&schema).unwrap();
+
+    file.write_all(raw.as_bytes()).unwrap();
+
+    Ok(())
+}

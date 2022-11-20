@@ -1,39 +1,42 @@
 export interface Command {}
 
 export interface ReadModel {
-    id: string
-    name: string
+  id: string
+  name: string
 }
 
+type RenderAs = "table" | "list" | "object" | "simple"
+type Value = object | number | string | boolean | null
+
 export interface ReadModelItem {
-    [key: string]: {
-        prefix: string
-        value: any
-    }
+  prefix: string
+  value: Value
+  renderAs: RenderAs
+}
+
+export interface ReadModelArrayItem {
+  data: ReadModelItem[]
+  reference: Value[]
 }
 
 export interface ReadModelTable {
-    data: ReadModelItem[]
-    renderAs: "table"
+  data: ReadModelArrayItem[]
+  renderAs: "table"
 }
 
 export interface ReadModelList {
-    data: ReadModelItem[]
-    renderAs: "list"
+  data: ReadModelArrayItem[]
+  renderAs: "list"
 }
 
 export interface ReadModelObject {
-    data: ReadModelItem
-    renderAs: "object"
+  data: { [key: string]: ReadModelItem }
+  renderAs: "object"
 }
 
 export interface ReadModelSimple {
-    data: null | number | string | boolean
-    renderAs: "simple"
+  data: ReadModelItem
+  renderAs: "simple"
 }
 
-export type ReadModelData =
-    | ReadModelTable
-    | ReadModelList
-    | ReadModelObject
-    | ReadModelSimple
+export type ReadModelData = ReadModelTable | ReadModelList | ReadModelObject | ReadModelSimple

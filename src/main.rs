@@ -12,7 +12,8 @@ pub mod utils;
 use std::path::Path;
 
 use crate::api::read_model::{
-    static_rocket_route_info_for_get_read_models, static_rocket_route_info_for_read_model,
+    static_rocket_route_info_for_add_read_model, static_rocket_route_info_for_get_read_models,
+    static_rocket_route_info_for_get_translation, static_rocket_route_info_for_read_model,
 };
 use crate::core::schema::load_schema;
 use crate::schema::chikapi::Schema;
@@ -48,7 +49,17 @@ fn main() {
     .unwrap();
 
     rocket::ignite()
-        .mount("/", routes![index, schema, read_model, get_read_models])
+        .mount(
+            "/",
+            routes![
+                index,
+                schema,
+                read_model,
+                get_read_models,
+                get_translation,
+                add_read_model
+            ],
+        )
         .mount("/", StaticFiles::from("app/dist"))
         .attach(cors)
         .launch();
