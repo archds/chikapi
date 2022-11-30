@@ -2,9 +2,9 @@ import { UseMutationResult, useQuery, UseQueryResult } from "react-query"
 import { ActionFunctionArgs } from "react-router"
 import { MutationError, ValidationError } from ".."
 import { Result } from "../result"
-import { SERVER_URL } from "../settings"
+import { API_ROOT } from "../settings"
 
-const ENDPOINT = "add_read_model"
+const ENDPOINT = API_ROOT + "/add_read_model"
 
 export interface KeyFieldInput {
   key?: string
@@ -78,7 +78,7 @@ async function addReadModel(data: ReadModelUnvalidatedInput): Promise<never | Re
     case "err":
       throw validation.data
     case "ok":
-      const res = await fetch(SERVER_URL + ENDPOINT, {
+      const res = await fetch(ENDPOINT, {
         method: "POST",
         body: JSON.stringify(validation.data),
       })

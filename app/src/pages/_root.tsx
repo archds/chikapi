@@ -9,6 +9,7 @@ import NotFound from "./not_found"
 import ReadModelPage from "./read_model"
 import { Heading, Progress } from "react-bulma-components"
 import { ToastContextT } from "../components/toast"
+import { API_ROOT } from "../services/settings"
 
 const toastDefaults: ToastContextT = {
   color: "info",
@@ -23,7 +24,7 @@ export const ToastContext = createContext<ToastContextT>(toastDefaults)
 
 function Root() {
   const { data, isLoading, isError } = useQuery("translation", async () => {
-    const res = await fetch("http://localhost:8080/translation")
+    const res = await fetch(`${API_ROOT}/translation`)
     return await res.json()
   })
 

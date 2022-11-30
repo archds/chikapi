@@ -1,5 +1,8 @@
+use std::path::Path;
+
 use rocket::http::Method;
-use rocket::Rocket;
+use rocket::{Rocket, Request};
+use rocket::response::NamedFile;
 use rocket_contrib::serve::StaticFiles;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
@@ -7,10 +10,15 @@ mod common;
 mod get_schema;
 mod read_model;
 
-// #[get("/")]
-// fn index() -> NamedFile {
-//     NamedFile::open(Path::new("app/dist/_app.html")).unwrap()
-// }
+#[get("/")]
+fn index() -> NamedFile {
+    NamedFile::open(Path::new("app/dist/_app.html")).unwrap()
+}
+
+#[catch(404)]
+fn not_found(_: &Request) -> NamedFile {
+    NamedFile::open(Path::new("app/dist/_app.html")).unwrap()
+}
 
 pub fn get_app() -> Rocket {
     let cors = rocket_cors::CorsOptions {
@@ -38,6 +46,8 @@ pub fn get_app() -> Rocket {
                 get_schema::schema
             ],
         )
+        .mount("/", routes![index])
         .mount("/", StaticFiles::from("app/dist"))
+        .register(catchers![not_found])
         .attach(cors)
 }

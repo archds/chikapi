@@ -1,11 +1,13 @@
+import { API_ROOT } from "./settings"
+
 export async function fetchReadModels() {
-  const res = await fetch("http://localhost:8080/rms")
+  const res = await fetch(`${API_ROOT}/rms`)
 
   return await res.json()
 }
 
 export async function fetchReadModelData(id: string) {
-  const res = await fetch(`http://localhost:8080/rm/${id}`)
+  const res = await fetch(`${API_ROOT}/rm/${id}`)
 
   return await res.json()
 }
