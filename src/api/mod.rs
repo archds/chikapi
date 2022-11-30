@@ -28,7 +28,7 @@ pub fn get_app() -> Rocket {
 
     rocket::ignite()
         .mount(
-            "/api",
+            "/chikapi",
             routes![
                 // index,
                 read_model::get_read_models,
