@@ -15,9 +15,9 @@ pub enum ResponseRenderAs {
 #[derive(Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RMResponseItem {
-    value: Value,
-    prefix: Option<String>,
-    render_as: ResponseRenderAs,
+    pub value: Value,
+    pub prefix: Option<String>,
+    pub render_as: ResponseRenderAs,
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq)]
@@ -52,18 +52,4 @@ pub struct RMSchemaResponse {
 pub struct ResponseItem {
     pub prefix: String,
     pub value: Value,
-}
-
-impl RMResponseItem {
-    pub fn new(value: Value, prefix: Option<String>) -> Self {
-        Self {
-            value: value.clone(),
-            prefix: prefix,
-            render_as: match value {
-                Value::Object(_) => ResponseRenderAs::Object,
-                Value::Array(_) => ResponseRenderAs::List,
-                _ => ResponseRenderAs::Simple,
-            },
-        }
-    }
 }

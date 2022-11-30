@@ -1,18 +1,21 @@
 use serde_json::{Map, Value};
 
 use crate::schema::chikapi::ReadModel;
+use crate::ApplicationError;
 
 pub fn get_read_model_by_id<'a>(
     id: &'a String,
     read_models: &'a Vec<ReadModel>,
-) -> Result<ReadModel, String> {
+) -> Result<ReadModel, ApplicationError> {
     let read_models = read_models
         .into_iter()
         .filter(|rm| &rm.id == id)
         .collect::<Vec<&ReadModel>>();
 
     if read_models.len() == 0 {
-        return Err("No such read model in schema!".to_owned());
+        return Err(ApplicationError::ReadModelNotFound(
+            "No such read model in schema!",
+        ));
     }
 
     Ok(read_models[0].clone())
