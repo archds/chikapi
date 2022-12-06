@@ -48,8 +48,9 @@ fn get_data(
 }
 
 #[get("/rm/<id>")]
-pub fn get_read_model(id: String) -> Result<Json<RMResponse>, ApplicationError> {
+pub async fn get_read_model(id: String) -> Result<Json<RMResponse>, ApplicationError> {
     load_schema()
+        .await
         .and_then(|schema| get_read_model_by_id(&id, &schema.read_models).map(|v| (v, schema)))
         .and_then(|(read_model, schema)| {
             get_data(
@@ -77,8 +78,9 @@ pub fn get_read_model(id: String) -> Result<Json<RMResponse>, ApplicationError> 
 }
 
 #[get("/rms")]
-pub fn get_read_models() -> Result<Json<Vec<RMSchemaResponse>>, ApplicationError> {
+pub async fn get_read_models() -> Result<Json<Vec<RMSchemaResponse>>, ApplicationError> {
     load_schema()
+        .await
         .map(|schema| {
             schema
                 .read_models
@@ -93,7 +95,7 @@ pub fn get_read_models() -> Result<Json<Vec<RMSchemaResponse>>, ApplicationError
 }
 
 #[post("/add_read_model", data = "<rm>")]
-pub fn add_read_model(rm: Json<ReadModel>) -> Result<Status, ApplicationError> {
+pub async fn add_read_model(rm: Json<ReadModel>) -> Result<Status, ApplicationError> {
     load_schema()
         .map(|mut schema| {
             schema.read_models.push(rm.into_inner());

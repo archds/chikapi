@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use rocket::futures::TryFutureExt;
 use rocket::tokio::fs::File;
-use rocket::tokio::io::{AsyncReadExt, BufReader, AsyncWriteExt};
+use rocket::tokio::io::{AsyncReadExt, AsyncWriteExt, BufReader};
 
 use crate::core::JSON_PATH;
 use crate::schema::chikapi::Schema;
@@ -35,9 +35,14 @@ pub async fn save_schema(schema: Schema) -> Result<(), ApplicationError> {
                 .map_err(|_| "Failed to serialize schema!")
                 .map(|raw| (raw, file))
         })
-        .and_then(|(raw, mut file)| {
-            file.write_all(raw.as_bytes())
-        })
         .map_err(|e| ApplicationError::SchemaPersistingError(e));
-    res
+
+    match res {
+        Ok((raw, mut file)) => file
+            .write_all(raw.as_bytes())
+            .await
+            .map(|_| ())
+            .map_err(|_| ApplicationError::SchemaPersistingError("Failed to save schema!")),
+        Err(e) => Err(e),
+    }
 }
