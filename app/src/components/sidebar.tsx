@@ -7,6 +7,7 @@ import { Command, ReadModel } from "../services/types"
 import ReadModelPage from "../pages/read_model"
 import favicon from "../public/favicon/android-chrome-192x192.png"
 import { NavLink } from "react-router-dom"
+import Skeleton from "react-loading-skeleton"
 
 function renderListItem(item: ReadModel): JSX.Element {
   return (
@@ -16,12 +17,44 @@ function renderListItem(item: ReadModel): JSX.Element {
   )
 }
 
+function SidebarLoading() {
+  return (
+    <Menu>
+      <Level renderAs={Link} to="/">
+        <Level.Item>
+          <Image src={favicon} size={64} />
+        </Level.Item>
+        <Level.Item>
+          <h3 className="title is-2 ml-4">ChickAPI</h3>
+        </Level.Item>
+      </Level>
+      <Menu.List title="Read Models">
+        <a><Skeleton height={20} width={150} /></a>
+        <a><Skeleton height={20} width={150} /></a>
+        <Link to="rm/add">
+          <Button size="small" color="primary">
+            Add
+          </Button>
+        </Link>
+      </Menu.List>
+      <Menu.List title="Commands">
+        <a><Skeleton height={20} width={150} /></a>
+        <Menu.List.Item>
+          <Button size="small" color="primary">
+            Add
+          </Button>
+        </Menu.List.Item>
+      </Menu.List>
+    </Menu>
+  )
+}
+
 function Sidebar() {
   const read_models = useQuery<ReadModel[], Error>("readModels", fetchReadModels)
   let read_models_elements: JSX.Element[]
 
   if (read_models.isLoading) {
-    return <></>
+    return <SidebarLoading/>
   }
 
   if (read_models.isError) {
