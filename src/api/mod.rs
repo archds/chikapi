@@ -1,40 +1,48 @@
 use std::path::Path;
 
-use rocket::http::Method;
-use rocket::{Rocket, Request};
-use rocket::response::NamedFile;
-use rocket_contrib::serve::StaticFiles;
-use rocket_cors::{AllowedHeaders, AllowedOrigins};
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::fs::{NamedFile, FileServer};
+use rocket::http::{Method, Header};
+use rocket::{Rocket, Request, Response, Build};
 
 mod common;
 mod get_schema;
 mod read_model;
 
 #[get("/")]
-fn index() -> NamedFile {
-    NamedFile::open(Path::new("app/dist/_app.html")).unwrap()
+async fn index() -> NamedFile {
+    NamedFile::open(Path::new("app/dist/_app.html")).await.unwrap()
 }
 
 #[catch(404)]
-fn not_found(_: &Request) -> NamedFile {
-    NamedFile::open(Path::new("app/dist/_app.html")).unwrap()
+async fn not_found(_: &Request<'_>) -> NamedFile {
+    NamedFile::open(Path::new("app/dist/_app.html")).await.unwrap()
 }
 
-pub fn get_app() -> Rocket {
-    let cors = rocket_cors::CorsOptions {
-        allowed_origins: AllowedOrigins::all(),
-        allowed_methods: vec![Method::Get, Method::Post, Method::Options]
-            .into_iter()
-            .map(From::from)
-            .collect(),
-        allowed_headers: AllowedHeaders::all(),
-        allow_credentials: true,
-        ..Default::default()
-    }
-    .to_cors()
-    .unwrap();
+pub struct CORS;
 
-    rocket::ignite()
+#[rocket::async_trait]
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Add CORS headers to responses",
+            kind: Kind::Response,
+        }
+    }
+
+    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "POST, GET, PATCH, OPTIONS",
+        ));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
+pub fn get_app() -> Rocket<Build> {
+    rocket::build()
         .mount(
             "/chikapi",
             routes![
@@ -47,7 +55,7 @@ pub fn get_app() -> Rocket {
             ],
         )
         .mount("/", routes![index])
-        .mount("/", StaticFiles::from("app/dist"))
-        .register(catchers![not_found])
-        .attach(cors)
+        .mount("/", FileServer::from("app/dist"))
+        .register("/", catchers![not_found])
+        .attach(CORS)
 }

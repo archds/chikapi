@@ -1,4 +1,3 @@
-#![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use]
 extern crate rocket;
 
@@ -12,6 +11,7 @@ pub use errors::ApplicationError;
 
 use self::api::get_app;
 
-fn main() {
-    get_app().launch();
+#[launch]
+fn rocket() -> _ {
+    get_app()
 }

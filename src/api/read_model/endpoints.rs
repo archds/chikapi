@@ -2,8 +2,7 @@ use std::collections::HashMap;
 
 use rocket::http::Status;
 
-use rocket_contrib::json::Json;
-
+use rocket::serde::json::Json;
 use serde_json::Value;
 
 use crate::core::schema::{load_schema, save_schema};
@@ -97,7 +96,7 @@ pub fn get_read_models() -> Result<Json<Vec<RMSchemaResponse>>, ApplicationError
 pub fn add_read_model(rm: Json<ReadModel>) -> Result<Status, ApplicationError> {
     load_schema()
         .map(|mut schema| {
-            schema.read_models.push(rm.to_owned());
+            schema.read_models.push(rm.into_inner());
             schema
         })
         .and_then(save_schema)

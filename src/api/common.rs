@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use rocket_contrib::json::Json;
+use rocket::serde::json::Json;
 
 use crate::core::schema::load_schema;
 
