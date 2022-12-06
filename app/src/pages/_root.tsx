@@ -11,6 +11,7 @@ import { Heading, Progress } from "react-bulma-components"
 import { ToastContextT } from "../components/toast"
 import { API_ROOT } from "../services/settings"
 import FullScreenLoader from "../components/loader"
+import { toast, ToastContainer } from "react-toastify"
 
 const toastDefaults: ToastContextT = {
   color: "info",
@@ -30,10 +31,17 @@ function Root() {
   })
 
   if (isLoading) {
-    return <FullScreenLoader loading color="white" background="dark" style="grid" />
+    toast.loading("Loading translations...", {
+      hideProgressBar: true,
+      draggable: false,
+      closeOnClick: false,
+      position: "bottom-center"
+    })
+  } else {
+    toast.dismiss()
   }
 
-  if (isError || !data) {
+  if (isError) {
     return <Heading textColor="danger">Error!</Heading>
   }
 
@@ -44,6 +52,7 @@ function Root() {
           <Outlet />
         </ToastContext.Provider>
       </Translation.Provider>
+      <ToastContainer />
     </BaseLayout>
   )
 }
