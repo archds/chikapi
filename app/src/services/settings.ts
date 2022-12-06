@@ -1,1 +1,1 @@
-export const API_ROOT = "/chikapi"
+export const API_ROOT = process.env.API_URL

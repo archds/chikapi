@@ -7,8 +7,14 @@ $body-line-height: 1.7;
 @import "~bulma";
 @import "~@creativebulma/bulma-tooltip";
 @import "~@creativebulma/bulma-divider";
+@import "./lds-grid.css";
+@import "./lds-ellipsis.css";
 
 // @import "../core/components/list/index"
+
+.loading-container {
+  height: 100vh;
+}
 
 .sidebar-layout {
   // border-right: solid 1px $grey-light

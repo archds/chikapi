@@ -10,6 +10,7 @@ import ReadModelPage from "./read_model"
 import { Heading, Progress } from "react-bulma-components"
 import { ToastContextT } from "../components/toast"
 import { API_ROOT } from "../services/settings"
+import FullScreenLoader from "../components/loader"
 
 const toastDefaults: ToastContextT = {
   color: "info",
@@ -29,7 +30,7 @@ function Root() {
   })
 
   if (isLoading) {
-    return <Progress />
+    return <FullScreenLoader loading color="white" background="dark" style="grid" />
   }
 
   if (isError || !data) {
