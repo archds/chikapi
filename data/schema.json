@@ -1,0 +1,79 @@
+{
+    "url": "https://jsonplaceholder.typicode.com",
+    "hasOpenapi": true,
+    "readModels": [
+      {
+        "path": "users",
+        "name": "Random user",
+        "id": "get-user",
+        "keyFields": [
+          {
+            "key": "name",
+            "size": 4
+          },
+          {
+            "key": "address",
+            "size": 4
+          },
+          {
+            "key": "address.geo",
+            "size": 4
+          },
+          {
+            "key": "company",
+            "size": 4
+          }
+        ],
+        "parameters": [
+          {
+            "type": "Path",
+            "value": "1"
+          }
+        ]
+      },
+      {
+        "path": "users",
+        "name": "User list",
+        "id": "user-list",
+        "keyFields": [
+          {
+            "key": "name",
+            "size": 4,
+            "prefix": "Name"
+          },
+          {
+            "key": "phone",
+            "size": 6,
+            "prefix": "Phone"
+          },
+          {
+            "key": "website",
+            "size": 6,
+            "prefix": "Website"
+          }
+        ],
+        "parameters": [],
+        "reference": {
+          "to": "get-user",
+          "parameters": [
+            {
+              "key": "id",
+              "type": "path"
+            }
+          ]
+        },
+        "style": "table"
+      }
+    ],
+    "commands": [],
+    "translation": {
+      "address": "Address",
+      "address.geo": "Address geolocation",
+      "lat": "latitude",
+      "lng": "longitude",
+      "company": "Company",
+      "catchPhrase": "catch phrase",
+      "bs": "business"
+    }
+  }
+  

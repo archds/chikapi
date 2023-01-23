@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    ports:
+      - 8080:8000
+    entrypoint: chikapi
+    volumes:
+      - ./data:/app/data
